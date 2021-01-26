@@ -42,13 +42,13 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias
 Clone o projeto:
 
 ```
-git clone https://github.com/jerp86/tdd-js.git
+git clone https://github.com/jerp86/generator-iterators-js.git
 ```
 
 Acesse a pasta clonada:
 
 ```
-cd tdd-js
+cd generator-iterators-js
 ```
 
 Instale as dependências
