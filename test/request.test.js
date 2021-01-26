@@ -42,7 +42,6 @@ describe('Request helpers', () => {
   });
 
   it('should return a JSON object after a request', async () => {
-    // convertendo a requisição principal em pequenas requisições
     const data = [
       Buffer.from('{ '),
       Buffer.from(' "ok"'),
@@ -54,7 +53,6 @@ describe('Request helpers', () => {
     const responseEvent = new Events();
     const httpEvent = new Events();
 
-    // substituindo a conexão com a internet
     const https = require('https');
     sandbox.stub(https, https.get.name)
       .yields(responseEvent)
@@ -63,15 +61,8 @@ describe('Request helpers', () => {
     const expected = { ok: 'ok' };
     const pendingPromise = request.get(urlRequest);
 
-    // juntando as requisições pequenas, e montando a requisição principal
-    // responseEvent.emit('data', data[0]);
-    // responseEvent.emit('data', data[1]);
-    // responseEvent.emit('data', data[2]);
-    // responseEvent.emit('data', data[3]);
-    // responseEvent.emit('data', data[4]);
     data.map(d => responseEvent.emit('data', d));
 
-    // informando que terminou de montar a requisição principal
     responseEvent.emit('end');
 
     const result = await pendingPromise;
