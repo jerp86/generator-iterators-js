@@ -57,6 +57,18 @@ describe('Pagination tests', () => {
       assert.ok(Pagination.sleep.calledWithExactly(expectedTimeout));
     });
 
-    it('should return data from request when succeded');
+    it('should return data from request when succeeded', async () => {
+      const data = { result: 'ok' };
+      const pagination = new Pagination();
+      
+      // deu certo a requisição, e a resposta foi ok
+      sandbox.stub(
+        pagination.request,
+        pagination.request.makeRequest.name,
+      ).resolves(data);
+
+      const result = await pagination.handleRequest({ url: 'https://google.com', page: 1 });
+      assert.deepStrictEqual(result, data)
+    });
   });
 });
