@@ -31,7 +31,23 @@ describe('Pagination tests', () => {
       assert.deepStrictEqual(getEntries(pagination), getEntries(expectedProperties));
     });
 
-    it('should set default options on Pagination instance');
+    it('should set default options on Pagination instance', () => {
+      const params = {
+        maxRetries: 2,
+        retryTimeout: 100,
+        maxRequestTimeout: 100,
+        threshold: 10,
+      };
+
+      const pagination = new Pagination(params);
+      const expectedProperties = {
+        request: {},
+        ...params
+      };
+
+      assert.ok(pagination.request instanceof Request);
+      assert.deepStrictEqual(JSON.stringify(pagination), JSON.stringify(expectedProperties));
+    });
 
     describe('#sleep', () => {
       it('should be a Promise object and not return values', async () => {
