@@ -44,7 +44,29 @@ class Pagination {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async getPaginated({ url, page }) {}
+  /**
+   * Os generators são usados para trabalhar com dados sob demanda
+   * é preciso anotar a função com * e usar o yield para retornar dados sob demanda
+   * 
+   * quando usamos o yield { 0 } o retorno pode ser { done: false, value: 0 }
+   * const r = getPaginated()
+   * r.next() -> { done: false, value: 0 }
+   * r.next() -> { done: true, value: 0 }
+   * 
+   * quando queremos delegar uma execução (não retornar valor, delegar!)
+   * yield* função
+   */
+  async * getPaginated({ url, page }) {
+    const result = await this.handleRequest({ url, page });
+    const lastId = result[result.length - 1]?.tid ?? 0;
+
+    // CUIDADO, mais de 1 milhão de requisições
+    if (lastId === 0) return;
+
+    yield result;
+    await Pagination.sleep(this.threshold);
+    yield* this.getPaginated({ url, page: lastId });
+  }
 }
 
 module.exports = Pagination;

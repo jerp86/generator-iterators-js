@@ -105,7 +105,51 @@ describe('Pagination tests', () => {
         }
       ];
 
-      it('should update request id on each requests');
+      it('should update request id on each requests', async () => {
+        const pagination = new Pagination();
+        sandbox.stub(
+          Pagination,
+          Pagination.sleep.name,
+        ).resolves();
+        
+        sandbox.stub(
+          pagination,
+          pagination.handleRequest.name,
+        ).onCall(0).resolves([responseMock[0]])
+          .onCall(1).resolves([responseMock[1]])
+          .onCall(2).resolves([]);
+
+        sandbox.spy(pagination, pagination.getPaginated.name);
+
+        const data = { url: 'https://google.com', page: 1 };
+
+        const secondCallExpectation = {
+          ...data,
+          page: responseMock[0].tid,
+        };
+
+        const thirdCallExpectation = {
+          ...secondCallExpectation,
+          page: responseMock[1].tid,
+        };
+
+        /**
+         * para chamar uma função que é um generator
+         * Array.from(pagination.getPaginated()) => dessa forma ele não espera os dados sob demanda!
+         * ele vai guardar tudo em memória e só depois jogar no array
+         * const r = pagination.getPaginated()
+         * r.next() 0> { done: true | false, value: {} }
+         * a melhor forma é usar o for..of
+         */
+        const gen = pagination.getPaginated(data);
+        for await (const result of gen) {}
+
+        const getFirstArgFromCall = value => pagination.handleRequest.getCall(value).firstArg;
+
+        assert.deepStrictEqual(getFirstArgFromCall(0), data);
+        assert.deepStrictEqual(getFirstArgFromCall(1), secondCallExpectation);
+        assert.deepStrictEqual(getFirstArgFromCall(2), thirdCallExpectation);
+      });
 
       it('should stop requesting when request return an empty array');
     });
