@@ -14,6 +14,10 @@ describe('Pagination tests', () => {
   afterEach(() => sandbox.restore());
 
   describe('#Pagination', () => {
+    it('should have default options on Pagination instance');
+
+    it('should set default options on Pagination instance');
+
     describe('#sleep', () => {
       it('should be a Promise object and not return values', async () => {
         const clock = sandbox.useFakeTimers();
