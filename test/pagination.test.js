@@ -151,7 +151,40 @@ describe('Pagination tests', () => {
         assert.deepStrictEqual(getFirstArgFromCall(2), thirdCallExpectation);
       });
 
-      it('should stop requesting when request return an empty array');
+      it('should stop requesting when request return an empty array', async () => {
+        const expectedThreshold = 20;
+        const pagination = new Pagination();
+        pagination.threshold = expectedThreshold;
+
+        sandbox.stub(
+          Pagination,
+          Pagination.sleep.name,
+        ).resolves();
+        
+        sandbox.stub(
+          pagination,
+          pagination.handleRequest.name,
+        ).onCall(0).resolves([responseMock[0]])
+          .onCall(1).resolves([])
+
+        sandbox.spy(pagination, pagination.getPaginated.name);
+
+        const data = { url: 'https://google.com', page: 1 };
+        const iterator = await pagination.getPaginated(data);
+        const [firstResult, secondResult] = await Promise.all([
+          iterator.next(),
+          iterator.next(),
+        ]);
+
+        const expectedFisrtCall = { done: false, value: [responseMock[0]] };
+        assert.deepStrictEqual(firstResult, expectedFisrtCall);
+
+        const expectedSecondtCall = { done: true, value: undefined };
+        assert.deepStrictEqual(secondResult, expectedSecondtCall);
+
+        assert.deepStrictEqual(Pagination.sleep.callCount, 1);
+        assert.ok(Pagination.sleep.calledWithExactly(expectedThreshold));
+      });
     });
   });
 });
