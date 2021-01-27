@@ -3,6 +3,7 @@ const assert = require('assert');
 const { describe, it, before, afterEach } = require('mocha');
 const { createSandbox } = require('sinon');
 const Pagination = require('../src/pagination');
+const Request = require('../src/request');
 
 describe('Pagination tests', () => {
   let sandbox;
@@ -14,7 +15,21 @@ describe('Pagination tests', () => {
   afterEach(() => sandbox.restore());
 
   describe('#Pagination', () => {
-    it('should have default options on Pagination instance');
+    it('should have default options on Pagination instance', () => {
+      const pagination = new Pagination();
+      const expectedProperties = {
+        maxRetries: 4,
+        retryTimeout: 1000,
+        maxRequestTimeout: 1000,
+        threshold: 200,
+      };
+
+      assert.ok(pagination.request instanceof Request);
+
+      Reflect.deleteProperty(pagination, "request");
+      const getEntries = item => Object.entries(item);
+      assert.deepStrictEqual(getEntries(pagination), getEntries(expectedProperties));
+    });
 
     it('should set default options on Pagination instance');
 
