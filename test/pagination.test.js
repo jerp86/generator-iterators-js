@@ -15,7 +15,17 @@ describe('Pagination tests', () => {
 
   describe('#Pagination', () => {
     describe('#sleep', () => {
-      it('sleep function tests');
+      it('should be a Promise object and not return values', async () => {
+        const clock = sandbox.useFakeTimers();
+        const time = 1;
+        const pendingPromise = Pagination.sleep(time);
+
+        clock.tick(time);
+        assert.ok(pendingPromise instanceof Promise);
+
+        const result = await pendingPromise;
+        assert.ok(result === undefined);
+      });
     });
 
     describe('#handleRequest', () => {
